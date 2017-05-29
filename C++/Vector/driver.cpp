@@ -15,7 +15,9 @@ int main() {
 	Vector<string> vs(16, "hello"); 
 	assert(vs.size() == 16 && vs.capacity() == 16); 
 	assert(vs.front() == "hello" && vs.back() == "hello"); 
-	assert(vs.at(5) == "hello"); 
+	assert(vs.at(5) == "hello");
+	vs.push_back("bye"); 
+	assert(vs.size() == 17 && vs.capacity() == 32); 
 	
 	vi.push_back(1); 
 	vi.push_back(3); 
