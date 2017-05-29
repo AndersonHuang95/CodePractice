@@ -1,14 +1,15 @@
 #include <stdexcept> 
+#include <string>
 
 template <class T>
 class LinkedList {
 public:
 	struct Node {
 		Node() {}
-		Node(T val) : value(val), next(std::nullptr); 
+		Node(T val) : value(val), next(nullptr) {}
 		T value; 
 		Node* next; 
-	}
+	};
 
 	LinkedList(); 
 	~LinkedList(); 
@@ -30,20 +31,30 @@ private:
 	Node* m_head; 
 	Node* m_tail; 
 	int m_size; 
-}
+};
 
 template <class T> 
 LinkedList<T>::LinkedList() : m_size(0) {}
 
 template <class T> 
 LinkedList<T>::~LinkedList() {
-	Node* p = m_head
+	Node* p = m_head;
 	Node* q;
 	while (p) {
 		q = p->next; 
 		delete p; 
 		p = q; 
 	}
+}
+
+template <class T>
+int LinkedList<T>::size() const {
+	return m_size; 
+}
+
+template <class T>
+bool LinkedList<T>::empty() const {
+	return m_size == 0; 
 }
 
 template <class T> 
@@ -71,6 +82,7 @@ void LinkedList<T>::push_front(T value) {
 		tmp->next = m_head; 
 		m_head = tmp; 
 	}
+	++m_size;
 }
 
 template <class T> 
@@ -85,6 +97,7 @@ void LinkedList<T>::pop_front() {
 		delete m_head; 
 		m_head = p; 
 	}
+	--m_size;
 }
 
 template <class T> 
@@ -97,10 +110,11 @@ void LinkedList<T>::push_back(T value) {
 		m_head->next = tmp; 
 		m_tail = tmp; 
 	}
+	++m_size;
 }
 
-void template <class T> 
-LinkedList<T>::pop_back() {
+template <class T> 
+void LinkedList<T>::pop_back() {
 	if (m_size == 0) throw std::out_of_range("Out of bounds"); 
 	else if (m_size == 1) {
 		delete m_tail;
@@ -118,16 +132,17 @@ LinkedList<T>::pop_back() {
 		q->next = nullptr; 
 		delete p;
 	}
+	--m_size;
 }
 
 template <class T> 
-T LinkedList<T>::front() {
+T LinkedList<T>::front() const {
 	if (m_size == 0) throw std::out_of_range("Out of bounds"); 
 	return m_head->value; 
 }
 
 template <class T>
-T LinkedList<T>::back() {
+T LinkedList<T>::back() const {
 	if (m_size == 0) throw std::out_of_range("Out of bounds"); 
 	return m_tail->value; 
 }
@@ -138,7 +153,7 @@ void LinkedList<T>::insert(int index, T value) {
 	if (index >= m_size) throw std::out_of_range("Out of bounds"); 
 
 	if (index == m_size - 1) {
-		push_back(); 
+		push_back(value); 
 		return;
 	}
 
@@ -155,6 +170,7 @@ void LinkedList<T>::insert(int index, T value) {
 				Node *tmp = new Node(value); 
 				tmp->next = p; 
 				q->next = tmp; 
+				++m_size;
 			}
 			return;
 		}
@@ -185,7 +201,8 @@ void LinkedList<T>::erase(int index) {
 			}
 			else {
 				q->next = p->next; 
-				delete p; 
+				delete p;
+				--m_size;
 			}
 			return;
 		}
@@ -196,10 +213,10 @@ void LinkedList<T>::erase(int index) {
 }
 
 template <class T>
-LinkedList<T>::reverse() {
+void LinkedList<T>::reverse() {
 	m_tail = m_head; 
 	Node* prev = nullptr;
-	NOde* current = m_head; 
+	Node* current = m_head; 
 	Node* next; 
 
 	while (current) {
@@ -213,7 +230,7 @@ LinkedList<T>::reverse() {
 }
 
 template <class T> 
-LinkedList<T>::remove(T value) {
+void LinkedList<T>::remove(T value) {
 	Node* p = m_head; 
 	Node* q = nullptr; 
 	
@@ -227,12 +244,14 @@ LinkedList<T>::remove(T value) {
 			}
 			else {
 				q->next = p->next; 
-				delete p; 
+				delete p;
+				--m_size;
 			}
 			return;
 		}
 		q = p;
 		p = p->next; 
-		++count;
 	}
 }
+
+
