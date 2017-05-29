@@ -8,8 +8,6 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#DEFINE DEFAULT_CAPACITY 16
-
 template <class T>
 class Vector {
 public: 
@@ -41,21 +39,22 @@ public:
 	T back() const; 
 	T at(int index) const;
 	int find(T value) const;
-	
-	/* TODO: Define square bracket operators? */ 
+	T operator[](int index) const;  
+
 
 	/* Mutators */ 
-	void push(T value); 
+	void push_back(T value); 
 	void insert(int index, T value); 
 	void prepend(T value); 
-	void pop(); 
-	void delete(int index); 
+	void pop_back(); 
+	void erase(int index); 
 	void remove(T value); 
 	
 private:
 	T* m_array;	// Pointer to the vector 
 	int m_capacity; 
 	int m_size; // Current size of the vector 
+	void resize(); 
 };
 
 #endif /* VECTOR_H */
