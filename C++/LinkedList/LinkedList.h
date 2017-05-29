@@ -1,3 +1,10 @@
+/*
+ * Linked List implementation
+ */ 
+
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
 #include <stdexcept> 
 #include <string>
 
@@ -254,4 +261,4 @@ void LinkedList<T>::remove(T value) {
 	}
 }
 
-
+#endif // LINKEDLIST_H
