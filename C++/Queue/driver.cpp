@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 #include <string>
 #include "Queue.h"
 
@@ -16,8 +17,8 @@ int main() {
 	assert(qi.back() == 1); 
 	assert(qi.size() == 5); 
 	assert(!qi.empty() && !qi.full());
-
-	qi.dequeue(); 
+	
+	qi.dequeue();
 	assert(qi.front() == 4); 
 
 	ListQueue<string> qs;
@@ -27,7 +28,7 @@ int main() {
 	qs.enqueue("Out"); 
 
 	assert(qs.front() == "First" && qs.back() == "Out"); 
-	
+
 	qs.dequeue(); 
 	assert(qs.front() == "In"); 
 	

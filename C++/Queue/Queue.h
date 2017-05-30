@@ -6,8 +6,9 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <stdexcept> 
-#include "../LinkedList.h"
+#include <stdexcept>
+#include <iostream>
+#include "../LinkedList/LinkedList.h"
 
 #define DEFAULT_CAPACITY 16 
 
@@ -34,6 +35,7 @@ public:
 	~Queue() {}
 	bool enqueue(T value); 
 	void dequeue();
+	void print() const; 
 	T front() const; 
 	T back() const; 
 	int size() const; 
@@ -53,28 +55,48 @@ Queue<T>::Queue() : m_size(0) {
 }
 
 /* No operation occurs if queue is full */
+template <class T>
 bool Queue<T>::enqueue(T value) {
 	if (full()) {
 		return false;
 	}
 	
-	m_arr[m_back + 1 % DEFAULT_CAPACITY] = value; 
-	m_back = (m_back + 1) % DEFAULT_CAPACITY; 
+	// Empty queue is a special case
+	if (empty()) { 
+		m_arr[m_front] = m_arr[m_back] = value; 
+	}
+	else {
+		m_arr[m_back + 1 % DEFAULT_CAPACITY] = value; 
+		m_back = (m_back + 1) % DEFAULT_CAPACITY; 
+	}
 	++m_size;
+	return true; 
 }
 
 /* Exception thrown if popping empty queue */
 template <class T> 
-void Queue<T>::dequeue(T value) {
+void Queue<T>::dequeue() {
 	if (empty()) throw std::length_error("Empty queue cannot be popped"); 
 	
 	// No need to overwrite the front element
 	// However, the queue may have one element, so move front and back 
 	if (m_front == m_back) m_back = (m_back + 1) % DEFAULT_CAPACITY;  
-	m_front = (m_front + 1) % DEFAULT_CAPACITY; 
+	else m_front = (m_front + 1) % DEFAULT_CAPACITY; 
 	--m_size; 
 }
 
+/* Debugging */
+template <class T>
+void Queue<T>::print() const {
+	for (int i = 0; i < DEFAULT_CAPACITY; ++i) {
+		std::cout << i << "\t\t";
+	}
+	std::cout << std::endl;
+	for (int i = 0; i < DEFAULT_CAPACITY; ++i) {
+		std::cout << m_arr[i] << "\t\t";
+	}
+	std::cout << std::endl;
+}
 template <class T>
 T Queue<T>::front() const {
 	return m_arr[m_front];
@@ -92,7 +114,7 @@ int Queue<T>::size() const {
 
 template <class T>
 bool Queue<T>::empty() const {
-	return m_size == 0; 
+	return (m_size ==  0); 
 }
 
 template <class T>
@@ -109,7 +131,7 @@ bool Queue<T>::full() const {
  * is used for insertions
  */
 template <class T> 
-class ListQueue() {
+class ListQueue {
 public:
 	ListQueue(); 
 	~ListQueue(); 
@@ -117,10 +139,11 @@ public:
 	void dequeue();
 	T front() const;
 	T back() const; 
-	bool empty(); 
+	bool empty() const; 
 private:
 	LinkedList<T> m_list; 
 };
+
 
 template <class T>
 ListQueue<T>::ListQueue() {}
@@ -135,9 +158,9 @@ void ListQueue<T>::enqueue(T value) {
 }
 
 template <class T>
-void ListQueue<T>::dequeue(T value) {
-	if (m_list.empty()) std::throw invalid_length("Cannot pop an empty queue"); 
-	m_list.push_front(value); 
+void ListQueue<T>::dequeue() {
+	if (m_list.empty()) throw std::length_error("Cannot pop an empty queue"); 
+	m_list.pop_front(); 
 }
 
 template <class T>

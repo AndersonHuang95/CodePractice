@@ -109,12 +109,12 @@ void LinkedList<T>::pop_front() {
 
 template <class T> 
 void LinkedList<T>::push_back(T value) {
-	Node*tmp = new Node(value); 
+	Node* tmp = new Node(value); 
 	if (m_size == 0) {
 		m_head = m_tail = tmp;
 	}
 	else {
-		m_head->next = tmp; 
+		m_tail->next = tmp; 
 		m_tail = tmp; 
 	}
 	++m_size;
