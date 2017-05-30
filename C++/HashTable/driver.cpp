@@ -21,22 +21,23 @@ int main() {
 	assert(his.size() == 4);
 	assert(his.capacity() == 16); 
 	
-	his[1] = "one"; 
-	his[2] = "two"; 
-	his[3] = "three";
-	his[4] = "four";
-	his[5] = "five"; // testing overwrite property
-	his[6] = "six";
-	his[7] = "seven";
-	his[8] = "eight";
-	his[9] = "nine"; 
-	his[10] = "ten";
-	his[11] = "eleven";
-	his[12] = "tweleve";
-	his[13] = "thirteen";
-
+	his.add(1, "one"); 
+	his.add(2, "two");
+	his.add(3, "three");
+	his.add(4, "four");
+	his.add(5, "five");
+	his.add(6, "six");
+	his.add(7, "seven");
+	his.add(8, "eight");
+	his.add(9, "nine");
+	his.add(10, "ten");
+	his.add(11, "eleven");
+	his.add(12, "twelve");
+	his.add(13, "thirteen");
+	his.add(14, "fourteen");
+	
 	// Table doubling should occur on this operation
-	his[14] = "fourteen"; 
+	his.add(15, "fifteen"); 
 	assert(his.size() == 17 && his.capacity() == 32); 
 
 	return 0;

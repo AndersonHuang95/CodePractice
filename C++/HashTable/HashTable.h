@@ -16,6 +16,7 @@
 
 #include <stdexcept> 
 #include <functional> // for built-in hash function
+#include <iostream> 
 
 #define INITIAL_SIZE 16
 
@@ -25,6 +26,7 @@ enum states_t {
 	REMOVED = 2
 };
 
+
 /* 
  * S is the data type of the key 
  * T is the data type of the value 
@@ -32,12 +34,12 @@ enum states_t {
 template <class S, class T> 
 class HashTable {
 public:	
-	struct KeyValue {
+	struct KeyValue {		
 		S first; 
 		T second; 
 	};
 
-/* Constructor and Destructor */
+	/* Constructor and Destructor */
 	HashTable();
 	~HashTable(); 
 
@@ -45,7 +47,7 @@ public:
 	/* Note these functions cannot call functions that are not const as well */
 	bool exists(S key) const; 
 	T get(S key) const; 
-	T operator[](S key) const; 
+	T& operator[](S key) const; 
 	int size() const; 
 	int capacity() const; 
 
@@ -107,8 +109,8 @@ bool HashTable<S,T>::exists(S key) const {
 	if (m_initialized[index] == USED && m_table[index].first == key) return true;
 
 	for (int i = index + 1; i != index; i = (i + 1) % m_buckets) {
-		if (m_initialized[index] == USED && m_table[index].first == key) return true; 
-		else if (m_initialized[index] == UNUSED) return false;
+		if (m_initialized[i] == USED && m_table[i].first == key) return true; 
+		else if (m_initialized[i] == UNUSED) return false;
 		else ; // slot is REMOVED, keep looping
 	}
 	return false; 
@@ -121,18 +123,34 @@ T HashTable<S,T>::get(S key) const{
 		return m_table[index].second;
 
 	for (int i = index + 1; i != index; i = (i + 1) % m_buckets) {
-		if (m_initialized[index] == USED && m_table[index].first == key) 
-			return m_table[index].second;
-		else if (m_initialized[index] == UNUSED)
+		if (m_initialized[i] == USED && m_table[i].first == key) 
+			return m_table[i].second;
+		else if (m_initialized[i] == UNUSED)
 			throw std::out_of_range("Key does not exist"); 
 		else ; // slot is REMOVED, keep searching	
 	}
 	throw std::out_of_range("Key does not exist"); 
 }
 
+/* Opposed to get, this function will not error out 
+ * if the key is not present 
+ * This function will mark a slot as marked even if 
+ * all is done is access the element, without assigning it a value
+ */
 template <class S, class T> 
-T HashTable<S,T>::operator[](S key) const {
-	return get(key); 
+T& HashTable<S,T>::operator[](S key) const {
+	int index = hash(key) % m_buckets; 
+	if (m_initialized[index] == USED && m_table[index].first == key) 
+		return m_table[index].second; 
+
+	for (int i = index + 1; i != index; i = (i + 1) % m_buckets) {
+		if (m_initialized[i] == USED && m_table[i].first == key) 
+			return m_table[i].second;
+		else if (m_initialized[i] == UNUSED) {
+			return m_table[index].second;
+		}
+		else ; // slot is REMOVED, keep searching	
+	}
 }
 
 template <class S, class T> 
