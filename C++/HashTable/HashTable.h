@@ -235,7 +235,4 @@ int HashTable<S,T>::hash(S key) const{
 	return m_hash(key); 
 }
 
-/* Remove is a tricky function 
- * Since linear probing will be used
- */
 #endif // HASHTABLE_H

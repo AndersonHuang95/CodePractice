@@ -2,8 +2,7 @@
 
 ## Description 
 
-A collection of various data structures and programming questions, separated  
-by C++ and Python. 
+A collection of various data structures and programming questions, separated by C++ and Python. 
 
 ## Usage
 
