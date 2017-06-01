@@ -167,7 +167,7 @@ void BST<T>::insert(T value) {
 
 template <class T>
 void BST<T>::remove(T value) {
-	removeHelper(m_root, value); 
+	removeHelper(m_root, value, nullptr); 
 }
 
 template <class T>
@@ -390,18 +390,18 @@ bool BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 	}
 	else {
 		// Leaf
-		if (!root->left && !root->right) {
-			delete root; 
-
+		if (!root->left && !root->right) { 
 			// Single element tree 
 			if (!parent) { 
+				delete root; 
 				m_root = nullptr; 
 				--m_nodes;  
 				return true;
 			}
 
 			// Which kind of child is root?
-			(parent->left == root) ? parent->left == nullptr : parent->right == nullptr;
+			(parent->left == root) ? parent->left = nullptr : parent->right = nullptr;
+			delete root; 
 		}
 		// One child
 		else if (!root->left || !root->right) {
@@ -412,7 +412,6 @@ bool BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 		// Two children
 		else {
 			T tmp = minValueHelper(root->right); 
-
 			// a) Left subtree of root's right subtree exists 
 			// Find the smallest of the largest in tree rooted at root->right
 
@@ -421,7 +420,7 @@ bool BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 			
 			// Either cases are handled recursively 
 			removeHelper(root->right, tmp, root); 
-			root->val = tmp; 
+			root->value = tmp; 
 		}
 		
 		--m_nodes; 

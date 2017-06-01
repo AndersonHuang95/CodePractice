@@ -38,5 +38,10 @@ int main() {
 	assert(bst.isBST()); 
 	assert(bst.getSuccessor("banana")->value == "blueberry");
 
+	bst.remove("canteloupe"); 
+	bst.remove("tomato"); 
+	bst.remove("watermelon"); 
+	assert(bst.maxValue() == "tangerine"); 
+	
 	return 0;
 }
