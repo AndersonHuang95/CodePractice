@@ -13,25 +13,28 @@
 #include <iostream> 
 #include <algorithm> // for max
 #include <vector> 
-#include <string> 
- 
+#include <string>
+#include <queue> 
+
+template <class T>
+struct TreeNode {
+	TreeNode() {}
+	TreeNode(T val) : value(val), left(nullptr), right(nullptr) {}
+	T value; 
+	TreeNode *left; 
+	TreeNode *right; 
+};
+
 template <class T> 
 class BST {
 public:
-	struct TreeNode<T> {
-		TreeNode<T>(T val) : value(val), left(nullptr), right(nullptr) {}
-		T value; 
-		TreeNode<T> *left; 
-		TreeNode<T> *right; 
-	}
-
 	BST(); 
 	~BST();
 	
 	/* Accessors */ 
 	int getNodeCount() const; 
 	void print() const; 
-	void printAsTree() const; 
+	// void printAsTree() const; 
 	bool exists(T value) const;
 	int height() const; 
 	T minValue() const; 
@@ -44,6 +47,7 @@ public:
 	void insert(T value); 
 	void remove(T value);
 	void deleteTree(TreeNode<T> *root); 
+
 private:
 	TreeNode<T> *find(TreeNode<T> *root, T value) const;
 	TreeNode<T> *findMin(TreeNode<T> *root) const; 
@@ -59,7 +63,7 @@ private:
 	TreeNode<T> *insertHelper(TreeNode<T> *root, T value); 
 	bool removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent); 
 	
-	Node *m_root; 
+	TreeNode<T> *m_root; 
 	int m_nodes; 
 };
 
@@ -83,11 +87,12 @@ void BST<T>::print() const {
 	std::cout << std::endl; 
 }
 
+/* 
 template <class T>
 void BST<T>::printAsTree() const {
 	std::vector<std::vector<T>> tree;
-	if (!m_root) return tree;
-	std::queue<TreeNode<T>> q; 
+	if (!m_root) return;
+	std::queue<TreeNode<T>*> q; 
 	q.push(m_root); 
 	q.push(nullptr); 
 
@@ -112,12 +117,13 @@ void BST<T>::printAsTree() const {
 	 
 	for (int i = tree.size() - 1; i >= 0; --i) {
 		for (int j = 0; j < tree[i].size(); ++j) {
-			if (j == 0) cout << std::string(i, ' ') << tree[i][j]; 
+			if (j == 0) std::cout << std::string(i, ' ') << tree[i][j]; 
 			std::cout << tree[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 }
+*/
 
 template <class T>
 bool BST<T>::exists(T value) const {
@@ -170,7 +176,8 @@ void BST<T>::deleteTree(TreeNode<T> *root) {
 	deleteTree(root->left); 
 	deleteTree(root->right);
 	// Do something goes here
-	std::cout << root->value << " "; 
+	// std::cout << root->value << " ";
+	delete root; 
 }
 
 /* 
@@ -182,8 +189,8 @@ TreeNode<T> *BST<T>::find(TreeNode<T> *root, T value) const {
 	if (!root) return nullptr;
 
 	if (root->value == value) return root; 
-	else if (value < root->val) return find(root->left, data);
-	else return find(root->right, data); 
+	else if (value < root->value) return find(root->left, value);
+	else return find(root->right, value); 
 }
 
 template <class T>
@@ -211,11 +218,11 @@ bool BST<T>::existsHelper(TreeNode<T> *root, T value) const {
 	
 	if (value < root->value) {
 		// Explore left subtree
-		return exists(root->left);
+		return existsHelper(root->left, value);
 	}
 	else {
 		// Explore right subtree 
-		return exists(root->right); 
+		return existsHelper(root->right, value); 
 	}
 }
 
@@ -243,17 +250,18 @@ bool BST<T>::existsHelper(TreeNode<T> *root, T value) const {
 template <class T>
 int BST<T>::heightHelper(TreeNode<T> *root) const {
 	if (!root) return -1; 
-	return (std::max(height(root->left), height(root->right)) + 1); 
+	return (std::max(heightHelper(root->left), heightHelper(root->right)) + 1); 
 }
 
 /* Find the left-most node */
 template <class T>
 T BST<T>::minValueHelper(TreeNode<T> *root) const {
 	if (m_nodes == 0) throw std::out_of_range("Cannot seek min value of an empty tree"); 
-	
-	if (root->left == nullptr)
-		return root->value; 
-	minValueHelper(root->left); 
+
+	while (root) {
+		if (!root->left) return root->value; 
+		else root = root->left; 
+	}
 }
 
 /* Find the right-most node */ 
@@ -261,17 +269,18 @@ template <class T>
 T BST<T>::maxValueHelper(TreeNode<T> *root) const {
 	if (m_nodes == 0) throw std::out_of_range("Cannot seek max value of an empty tree"); 
 
-	if (root->right == nullptr) 
-		return root->value;
-	maxValueHelper(root->right); 
+	while (root) {
+		if (!root->right) return root->value;
+		else root = root->right; 
+	}
 }
 
 template <class T>
 bool BST<T>::isBSTHelper(TreeNode<T> *root) const {
 	if (!root) return true; 
 		
-	return isSubtreeLesser(root, root->value) 
-		&& isSubtreeGreater(root, root->value)
+	return isSubtreeLesser(root->left, root->value) 
+		&& isSubtreeGreater(root->right, root->value)
 		&& isBSTHelper(root->left) 
 		&& isBSTHelper(root->right); 
 
@@ -305,7 +314,7 @@ bool BST<T>::isSubtreeGreater(TreeNode<T> *root, T value) const {
  */ 
 template <class T>
 TreeNode<T> *BST<T>::getSuccessorHelper(TreeNode<T> *root, T value) const {
-	Node *current = find(root, data); 
+	TreeNode<T> *current = find(root, value); 
 	if (!current) return nullptr;
 
 	// Two cases
@@ -315,8 +324,8 @@ TreeNode<T> *BST<T>::getSuccessorHelper(TreeNode<T> *root, T value) const {
 	
 	// right subtree does not exist
 	else {
-		Node *successor = nullptr; 
-		Node *ancestor = root; 
+		TreeNode<T> *successor = nullptr; 
+		TreeNode<T> *ancestor = root; 
 		
 		// Search until ancestor's data becomes smaller than current's
 		// Return the node right before this situation occurs 
@@ -324,7 +333,7 @@ TreeNode<T> *BST<T>::getSuccessorHelper(TreeNode<T> *root, T value) const {
 		// Successor is only updated when ancestor's values are 
 		// greater than or equal to current->data 
 		while (ancestor != current) {
-			if (current->data < ancestor->value) {
+			if (current->value < ancestor->value) {
 				successor = ancestor;
 				ancestor = ancestor->left; 
 			}
@@ -366,7 +375,7 @@ TreeNode<T> *BST<T>::insertHelper(TreeNode<T> *root, T value) {
  * returns true if deletion was successful 
  */
 template <class T>
-bool *BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
+bool BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 	// Empty tree
 	if (m_nodes == 0) throw std::out_of_range("Cannot remove from empty tree"); 
 	
@@ -387,6 +396,7 @@ bool *BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 			// Single element tree 
 			if (!parent) { 
 				m_root = nullptr; 
+				--m_nodes;  
 				return true;
 			}
 
@@ -413,7 +423,8 @@ bool *BST<T>::removeHelper(TreeNode<T> *root, T value, TreeNode<T> *parent) {
 			removeHelper(root->right, tmp, root); 
 			root->val = tmp; 
 		}
-
+		
+		--m_nodes; 
 		return true; 
 	}
 }

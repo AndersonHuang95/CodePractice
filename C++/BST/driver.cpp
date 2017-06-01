@@ -28,13 +28,11 @@ int main() {
 	bst.insert("avocado"); 
 
 	assert(bst.getNodeCount() == 17); 
-	bst.print(); 
-	bst.printAsTree(); 
 	cout << bst.height(); 
 
 	assert(bst.exists("banana")); 
 	assert(bst.minValue() == "apple"); 
-	assert(bst.maxValue() == "strawberry"); 
+	assert(bst.maxValue() == "watermelon"); 
 
 	assert(bst.getSuccessor("pear")->value == "pineapple"); 
 	assert(bst.isBST()); 
