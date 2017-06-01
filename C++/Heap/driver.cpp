@@ -17,13 +17,15 @@ int main() {
 	assert(hi.getMax() == 8); 
 	hi.extractMax(); 
 	assert(hi.getMax() == 7); 
-
-	Heap<double> hd = {1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 8.0}; 
 	
-	while (!hd.empty()) {
-		cout << hd.extractMax() << " "; 
-	}
+	/* O(n) to create the heap */ 
+	Heap<double> hd = {1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 8.0}; 
+
+	/* O(n log n) to create the sorted array in place 
+	 * because ceil(n/2) nodes are leaves */
+	hd.heapsort(); 
+	for (int i = 0; i < hd.size(); ++i) 
+		cout << hd.getHeap()[i] << " "; 
 	cout << endl; 
 
- 	assert(hd.empty()); 
 }

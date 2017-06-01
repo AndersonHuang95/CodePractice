@@ -30,26 +30,27 @@ template <class T>
 class Heap {
 public:
 	Heap() {}
-	Heap(std::initializer_list<T> list) : m_array(list) { heapsort(); }
+	Heap(std::initializer_list<T> list) : m_array(list) { heapify(); }
 	~Heap() {}
 
 	/* Accessors */
 	T getMax() const;
 	int size() const; 
 	bool empty() const; 
-	int parent(int index) { return (index - 1) / 2; }
-	int childOne(int index) { return 2 * index + 1; }
-	int childTwo(int index) { return 2 * index + 2; }
-
+	int parent(int index) const { return (index - 1) / 2; }
+	int childOne(int index) const { return 2 * index + 1; }
+	int childTwo(int index) const { return 2 * index + 2; }
+	std::vector<T> getHeap() const { return m_array; } 
+	
 	/* Mutators */ 
 	void insert(T value); 
 	void siftUp(int index);
 	T extractMax(); 
-	void siftDown(int index); 
+	void siftDown(int index, int size); 
 	void remove(int index); 
 
 	/* Algorithms */ 
-	// void heapify(vector<T>& arr);
+	void heapify();
 	void heapsort();
 
 private:
@@ -97,10 +98,21 @@ T Heap<T>::extractMax() {
 }
 
 template <class T> 
-void Heap<T>::siftDown(int index) {
-	while (index <= parent(size())) {
+void Heap<T>::siftDown(int index, int size) {
+	int largest = index; 
+	int l = childOne(index);
+	int r = childTwo(index);
+
+	if (l < size && m_array[l] > m_array[largest]) largest = l;
+	if (r < size && m_array[r] > m_array[largest]) largest = r; 
+	if (largest != index) {
+		std::swap(m_array[index], m_array[largest]); 
+		siftDown(size, largest);
+	}
+	/*
+	while (index <= parent(size)) {
 		// Either two children or one children for current index 
-		if (childTwo(index) < size()) {
+		if (childTwo(index) < size) {
 			int tmp = (m_array[childOne(index)] > m_array[childTwo(index)]) ? childOne(index) : childTwo(index); 
 			if (m_array[tmp] > m_array[index]) std::swap(m_array[tmp], m_array[index]); 
 			index = tmp; 
@@ -110,21 +122,34 @@ void Heap<T>::siftDown(int index) {
 			index = childOne(index); 
 		}
 	}
+	*/
 }
 
 template <class T> 
 void Heap<T>::remove(int index) {
 	if (empty()) throw std::out_of_range("Cannot remove from an empty heap"); 
-	m_array[index] = m_array[size() - 1]; 
+	std::swap(m_array[index], m_array[size() - 1]);  
 	m_array.pop_back(); 
-	siftDown(index); 
+	siftDown(index, size()); 
 }
 
 template <class T> 
-void Heap<T>::heapsort() {
-	for (int i = size() - 1; i >= 0; --i) {
+void Heap<T>::heapify() {
+	for (int i = size(); i >= 0; --i) {
 		siftUp(i); 
 	}
 }
 
+/* In-place sort */ 
+template <class T>
+void Heap<T>::heapsort() {
+	for (int i = size() - 1; i >= 0; --i) {
+		//std::cout << i << "\t" << m_array[0] << "\t" << m_array[i] << "\t"; 
+		//for (int j = 0; j < size(); j++) 
+		//	std::cout << m_array[j] << " ";
+		//std::cout << std::endl; 
+		std::swap(m_array[0], m_array[i]);
+		siftDown(0, i);  
+	}
+}
 #endif	// HEAP_H
