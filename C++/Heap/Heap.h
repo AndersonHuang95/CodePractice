@@ -20,8 +20,9 @@
 #ifndef HEAP_H
 #define HEAP_H
 
-#include <stdxcept> 
-#include <algorithM> 
+#include <iostream> 
+#include <stdexcept> 
+#include <algorithm> 
 #include <vector> 
 #include <initializer_list> 
 
@@ -29,7 +30,7 @@ template <class T>
 class Heap {
 public:
 	Heap() {}
-	Heap(std::initializer_list<T> list) : m_array(list) { heapify(m_array); }
+	Heap(std::initializer_list<T> list) : m_array(list) { heapsort(); }
 	~Heap() {}
 
 	/* Accessors */
@@ -42,10 +43,10 @@ public:
 
 	/* Mutators */ 
 	void insert(T value); 
-	void siftUp(T value);
+	void siftUp(int index);
 	T extractMax(); 
-	void siftDown(T value, int index); 
-	T remove(int index); 
+	void siftDown(int index); 
+	void remove(int index); 
 
 	/* Algorithms */ 
 	// void heapify(vector<T>& arr);
@@ -80,7 +81,7 @@ void Heap<T>::insert(T value) {
 
 template <class T> 
 void Heap<T>::siftUp(int index) {
-	while (parent(index) >= 0) {
+	while (index > 0) {
 		if (m_array[parent(index)] < m_array[index]) 
 			std::swap(m_array[parent(index)], m_array[index]);
 		index = parent(index); 
@@ -100,28 +101,28 @@ void Heap<T>::siftDown(int index) {
 	while (index <= parent(size())) {
 		// Either two children or one children for current index 
 		if (childTwo(index) < size()) {
-			int tmp = (m_arr[childOne(index)] > m_arr[childTwo(index)]) ? childOne(index) : childTwo(index); 
+			int tmp = (m_array[childOne(index)] > m_array[childTwo(index)]) ? childOne(index) : childTwo(index); 
 			if (m_array[tmp] > m_array[index]) std::swap(m_array[tmp], m_array[index]); 
 			index = tmp; 
 		}
 		else {
-			if (m_arr[childOne(index)] > m_array[index]) std::swap(m_array[childOne(index)], m_array[index]);
+			if (m_array[childOne(index)] > m_array[index]) std::swap(m_array[childOne(index)], m_array[index]);
 			index = childOne(index); 
 		}
 	}
 }
 
 template <class T> 
-Heap<T>::remove(int index) {
+void Heap<T>::remove(int index) {
 	if (empty()) throw std::out_of_range("Cannot remove from an empty heap"); 
-	m_array[size() - 1] = m_array[index]; 
-	m_array.pop_back; 
+	m_array[index] = m_array[size() - 1]; 
+	m_array.pop_back(); 
 	siftDown(index); 
 }
 
 template <class T> 
 void Heap<T>::heapsort() {
-	for (int i = size() - 1; i >= 0; ++i) {
+	for (int i = size() - 1; i >= 0; --i) {
 		siftUp(i); 
 	}
 }
