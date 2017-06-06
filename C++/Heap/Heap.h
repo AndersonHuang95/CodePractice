@@ -107,7 +107,7 @@ void Heap<T>::siftDown(int index, int size) {
 	if (r < size && m_array[r] > m_array[largest]) largest = r; 
 	if (largest != index) {
 		std::swap(m_array[index], m_array[largest]); 
-		siftDown(size, largest);
+		siftDown(largest, size);
 	}
 	/*
 	while (index <= parent(size)) {
@@ -135,8 +135,8 @@ void Heap<T>::remove(int index) {
 
 template <class T> 
 void Heap<T>::heapify() {
-	for (int i = size(); i >= 0; --i) {
-		siftUp(i); 
+	for (int i = parent(size()); i >= 0; --i) {
+		siftDown(i, size()); 
 	}
 }
 

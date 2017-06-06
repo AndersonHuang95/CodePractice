@@ -224,6 +224,10 @@ void HashTable<S,T>::resize() {
 		}
 	}
 
+	// Delete old data members 
+	delete [] m_table; 
+	delete [] m_initialized; 
+	
 	// Set new data members
 	m_buckets = new_size; 
 	m_table = tmp;
