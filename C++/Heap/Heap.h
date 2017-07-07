@@ -1,5 +1,5 @@
 /*
- * Heap implementation 
+ * Binary Heap implementation 
  * The heap is represented internally as an array 
  *
  * To do this, consider each node to be indexed as an element in 
@@ -29,8 +29,13 @@
 template <class T> 
 class Heap {
 public:
-	Heap() {}
-	Heap(std::initializer_list<T> list) : m_array(list) { heapify(); }
+	Heap(bool (*Comparator) (T&, T&)) {
+		m_comparator = Comparator; 
+	}
+	Heap(std::initializer_list<T> list, bool (*Comparator) (T&, T&)) : m_array(list) { 
+		heapify(); 
+		m_comparator = Comparator; 
+	}
 	~Heap() {}
 
 	/* Accessors */
@@ -41,10 +46,11 @@ public:
 	int childOne(int index) const { return 2 * index + 1; }
 	int childTwo(int index) const { return 2 * index + 2; }
 	std::vector<T> getHeap() const { return m_array; } 
-	
+	bool (*compare()) (T&, T&) { return m_comparator; }
+
 	/* Mutators */ 
 	void insert(T value); 
-	void siftUp(int index);
+	int siftUp(int index);
 	T extractMax(); 
 	void siftDown(int index, int size); 
 	void remove(int index); 
@@ -55,6 +61,7 @@ public:
 
 private:
 	std::vector<T> m_array; 
+	bool (*m_comparator) (T&, T&); 
 };
 
 template <class T> 
@@ -80,13 +87,18 @@ void Heap<T>::insert(T value) {
 	siftUp(size() - 1); 
 }
 
+/**
+ * Returns index to where element was moved 
+ */
 template <class T> 
-void Heap<T>::siftUp(int index) {
-	while (index > 0) {
-		if (m_array[parent(index)] < m_array[index]) 
-			std::swap(m_array[parent(index)], m_array[index]);
+int Heap<T>::siftUp(int index) {
+	while (parent(index) >= 0 && m_comparator(m_array[parent(index)], m_array[index])) {
+		std::swap(m_array[parent(index)], m_array[index]);
 		index = parent(index); 
 	}
+	// Parent(index) is not valid for comparison OR comparison failed, so node
+	// has moved to index 
+	return index; 
 }
 
 template <class T> 
@@ -103,26 +115,12 @@ void Heap<T>::siftDown(int index, int size) {
 	int l = childOne(index);
 	int r = childTwo(index);
 
-	if (l < size && m_array[l] > m_array[largest]) largest = l;
-	if (r < size && m_array[r] > m_array[largest]) largest = r; 
+	if (l < size && m_comparator(m_array[largest], m_array[l])) largest = l;
+	if (r < size && m_comparator(m_array[largest], m_array[r])) largest = r; 
 	if (largest != index) {
 		std::swap(m_array[index], m_array[largest]); 
 		siftDown(largest, size);
 	}
-	/*
-	while (index <= parent(size)) {
-		// Either two children or one children for current index 
-		if (childTwo(index) < size) {
-			int tmp = (m_array[childOne(index)] > m_array[childTwo(index)]) ? childOne(index) : childTwo(index); 
-			if (m_array[tmp] > m_array[index]) std::swap(m_array[tmp], m_array[index]); 
-			index = tmp; 
-		}
-		else {
-			if (m_array[childOne(index)] > m_array[index]) std::swap(m_array[childOne(index)], m_array[index]);
-			index = childOne(index); 
-		}
-	}
-	*/
 }
 
 template <class T> 
@@ -152,4 +150,5 @@ void Heap<T>::heapsort() {
 		siftDown(0, i);  
 	}
 }
+
 #endif	// HEAP_H
