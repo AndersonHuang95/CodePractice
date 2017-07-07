@@ -303,10 +303,6 @@ vector<int> WeightedGraph::Prims(int start_node) {
 	return parents; 
 }
 
-/** 
- * Kruskal's Algorithm 
- */
-
 /**
  * Union-Find Data structure 
  * By cleverly using Union By Rank and Path Compression techniques
@@ -323,13 +319,16 @@ struct subset {
  * The root of a subset is found when the value in the subsets
  * array is the same as the node number 
  */
-int find(vector<subset> subsets, int i) {
+int find(vector<subset>& subsets, int i) {
 	if (subsets[i].parent == i) 
 		return i;
 	return find(subsets, subsets[i].parent); 
 }
 
-void union(vector<subset> subsets, int s, int t) {
+/* 
+ * CAREFUL, Union is a reserved keyword in C++
+ */
+void unionSet(vector<subset>& subsets, int s, int t) {
 	int sroot = find(subsets, s); 
 	int troot = find(subsets, t); 
 
@@ -339,10 +338,15 @@ void union(vector<subset> subsets, int s, int t) {
 		subsets[troot].parent = sroot; 
 	else {
 		// Equal ranks, arbitrarily assign one as the parent
-		subsets[sroot].parent = root; 
+		subsets[sroot].parent = troot; 
 		subsets[troot].rank++; 
 	}
 }
+
+/** 
+ * Kruskal's Algorithm 
+ * Assumes connected graph
+ */
 
 void WeightedGraph::Kruskals() {
 	// Initialize Union-Find data structure 
@@ -355,8 +359,28 @@ void WeightedGraph::Kruskals() {
 	}
 
 	// Sort the edges in the graph 
-	vector<vector<WeightedEdges>> edges = m_adjacency_list; 
-	edges
+	// First, edges must be copied from adjacency list into edge vector
+	vector<WeightedEdge> edges; 
+	for (auto row : m_adjacency_list)
+		for (WeightedEdge edge : row)
+			edges.push_back(edge); 
+	sort(edges.begin(), edges.end(), [](const WeightedEdge &x, const WeightedEdge& y) -> bool { return x.weight < y.weight; });
+
+	int total_cost = 0; 
+	// Process all edges in increasing order 
+	// Add an edge only if does not form a cycle 
+	// With Union-Find, a cycle is easily detected by discovering
+	// if a candidate edge's vertices both have the same root 
+	for (WeightedEdge edge: edges) {
+		int sroot = find(subsets, edge.source);
+		int droot = find(subsets, edge.dest); 
+		if (sroot != droot) {
+			unionSet(subsets, sroot, droot); 
+			total_cost += edge.weight; 
+			cout << "Added edge (" << edge.source << "," << edge.dest << ")" << endl;
+		}
+	}
+	cout << "Total cost: " << total_cost << endl; 
 }
 
 /**
@@ -367,8 +391,3 @@ vector<int> WeightedGraph::Dijkstras(int start_node) {
 
 }
 
-///////////////////////////////////////////////////////////
-
-/**
- * Operations for Union Find 
- */

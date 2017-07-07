@@ -59,7 +59,7 @@ public:
 
 	/* Algorithms */ 
 	std::vector<int> Prims(int start_node); 
-	std::vector<int> Kruskals(); 
+	void Kruskals(); 
 	std::vector<int> Dijkstras(int start_node); 
 private: 
 	std::vector<std::vector<WeightedEdge>> m_adjacency_list;
