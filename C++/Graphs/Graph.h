@@ -17,12 +17,14 @@ struct WeightedEdge {
 
 class Graph {
 public:
+	Graph(int size); 
 	Graph(std::string file_name); 
 
 	/* Getters */ 
 	std::vector<std::vector<int>> getAdjacencyList();
 	int getEdges();
 	int getNodes();
+	int getConnectedComponents();
 	std::vector<int> getStartTimes(); 
 	std::vector<int> getEndTimes();
 	
@@ -33,16 +35,23 @@ public:
 	std::vector<int> BFS(int start_node); 
 	std::vector<int> DFS(int start_node); 
 	std::vector<int> DFSI(int start_node);
-
 	void DFSIterative(int start_node, std::vector<int>& parents, std::vector<int>& seen);
 	void DFSHelper(int start_node, std::vector<int>& parents, std::vector<int>& seen);
 	int recoverDistance(std::vector<int> parents, int start_node);
+
+	bool hasCycle(); 
+	bool hasCycleHelper(int start_node, std::vector<int>& rec_stack, std::vector<int>& seen);
+	std::vector<int> topologicalSort(); 
+	std::vector<int> StronglyConnectedComponents();
+	bool isBipartite(); 
+
 private: 
 	std::vector<std::vector<int>> m_adjacency_list;
 	std::vector<int> m_start_times;
 	std::vector<int> m_end_times; 
 	int m_edges; 
 	int m_nodes; 
+	int m_connected_components; 
 };
 
 class WeightedGraph {
@@ -61,6 +70,7 @@ public:
 	std::vector<int> Prims(int start_node); 
 	void Kruskals(); 
 	std::vector<int> Dijkstras(int start_node); 
+
 private: 
 	std::vector<std::vector<WeightedEdge>> m_adjacency_list;
 	int m_edges; 
